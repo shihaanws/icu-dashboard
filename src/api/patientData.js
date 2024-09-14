@@ -16,10 +16,9 @@ export const fetchPatientStats = async () => {
   return data;
 };
 
-export const fetchNeurologyData = async (patientId, date) => {
-  console.log("date", date);
+export const fetchNeurologyData = async (patientId, selectedDay) => {
   const { data } = await axios.get(
-    `https://api-testing.diagna.icu/mimic/api/neurology?type=Orientation&date=${date}&stay_id=${patientId}`
+    `https://api-testing.diagna.icu/mimic/api/neurology?type=Orientation&date=${selectedDay}&stay_id=${patientId}`
   );
   return data;
 };
@@ -34,6 +33,13 @@ export const fetchLabsData = async (patientId, date) => {
 export const fetchVentilationData = async (patientId, date) => {
   const { data } = await axios.get(
     `https://api-testing.diagna.icu/mimic/api/ventilation/?type=setting&date=${date}&stay_id=${patientId}`
+  );
+  return data;
+};
+
+export const fetchDateRange = async (patientId, tableName) => {
+  const { data } = await axios.get(
+    `https://api-testing.diagna.icu/mimic/api/misc/getDateRange/?stay_id=${patientId}&table_name=${tableName}`
   );
   return data;
 };

@@ -30,19 +30,18 @@ function App() {
             {/* List of all patients */}
             <Route path="/patients" element={<LandingPage />} />
 
-            {/* Patient-specific routes */}
             <Route
-              path="/patient/:patientId/:date/neurology"
+              path="/patient/:patientId/neurology"
               element={<NeurologyPage />}
-            ></Route>
+            />
 
             <Route
-              path="/patient/:patientId/:date/labs"
+              path="/patient/:patientId/labs"
               element={<LabsPage />}
             ></Route>
 
             <Route
-              path="/patient/:patientId/:date/ventilation"
+              path="/patient/:patientId/ventilation"
               element={<VentilationPage />}
             ></Route>
 

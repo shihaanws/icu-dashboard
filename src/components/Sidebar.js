@@ -1,19 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Sidebar = ({ patientId, date }) => {
-  
+const Sidebar = ({ patientId, startDate, endDate }) => {
   return (
     <div className="sidebar">
       <ul>
         <li>
-          <Link to={`/patient/${patientId}/${date}/neurology`}>Neurology</Link>
+          <Link to={`/patient/${patientId}/neurology`}>
+            Neurology
+          </Link>
         </li>
         <li>
-          <Link to={`/patient/${patientId}/${date}/labs`}>Labs</Link>
+          <Link to={`/patient/${patientId}/labs`}>
+            Labs
+          </Link>
         </li>
         <li>
-          <Link to={`/patient/${patientId}/${date}/ventilation`}>
+          <Link
+            to={`/patient/${patientId}/ventilation`}
+          >
             Ventilation
           </Link>
         </li>
