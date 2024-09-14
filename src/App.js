@@ -1,24 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import "./index.css"; // Import your Tailwind CSS here
+
+// Pages
+import LandingPage from "./pages/LandingPage";
+import NeurologyPage from "./pages/NeurologyPage";
+import LabsPage from "./pages/LabsPage";
+import VentilationPage from "./pages/VentilationPage";
+
+// Initialize React Query Client
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="App">
+          {/* Define your routes here */}
+          <Routes>
+            {/* Landing page route */}
+            <Route path="/" element={<Navigate to="/patients" />} />
+
+            {/* List of all patients */}
+            <Route path="/patients" element={<LandingPage />} />
+
+            <Route
+              path="/patient/:patientId/neurology"
+              element={<NeurologyPage />}
+            />
+
+            <Route
+              path="/patient/:patientId/labs"
+              element={<LabsPage />}
+            ></Route>
+
+            <Route
+              path="/patient/:patientId/ventilation"
+              element={<VentilationPage />}
+            ></Route>
+
+            {/* Catch all for undefined routes */}
+            <Route path="*" element={<div>Page Not Found</div>} />
+          </Routes>
+        </div>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
