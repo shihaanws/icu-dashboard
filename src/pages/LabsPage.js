@@ -20,7 +20,6 @@ const LabsPage = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [loader, setLoader] = useState(true);
 
-  // Data fetching hooks
   const { data: rangeData, isLoading: isLoadingRange } = useDataFetch(
     "labsRange",
     fetchDateRange,
@@ -30,10 +29,10 @@ const LabsPage = () => {
   const { data: labsData, isLoading } = useDataFetch(
     "labsData",
     fetchLabsData,
-    [patientId, selectedDay]
+    [patientId, selectedDay],
+    selectedDay !== null
   );
 
-  // Effect hooks
   useEffect(() => {
     if (rangeData?.data) {
       const fetchedStartDate = rangeData.data.start_time?.slice(0, 10);
@@ -56,7 +55,6 @@ const LabsPage = () => {
     setSelectedDay(value);
   };
 
-  // Table columns configuration
   const columns = [
     { title: "Patient ID", dataIndex: "subject_id", key: "subject_id" },
     { title: "Admission ID", dataIndex: "stay_id", key: "stay_id" },

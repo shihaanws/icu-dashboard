@@ -1,12 +1,13 @@
 import { useQuery } from "react-query";
 
-export const useDataFetch = (queryKey, fetchData, params) => {
+export const useDataFetch = (queryKey, fetchData, params, isEnabled) => {
   const { data, isLoading, error } = useQuery(
     [queryKey, ...params],
     () => fetchData(...params),
     {
+      refetchOnWindowFocus: false,
       keepPreviousData: true,
-      enabled: params.length > 0,
+      enabled: isEnabled, // Enable the query based on the provided condition
     }
   );
 

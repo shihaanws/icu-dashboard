@@ -37,8 +37,10 @@ const NeurologyPage = () => {
   const { data: neuroData, isLoading } = useDataFetch(
     "neuroData",
     fetchNeurologyData,
-    [patientId, selectedDay, neuroType]
+    [patientId, selectedDay, neuroType],
+    selectedDay !== null 
   );
+  
 
   useEffect(() => {
     if (rangeData?.data) {

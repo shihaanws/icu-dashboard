@@ -32,7 +32,9 @@ const VentilationPage = () => {
   const { data: ventData, isLoading } = useDataFetch(
     "ventData",
     fetchVentilationData,
-    [patientId, selectedDay, ventilationType]
+    [patientId, selectedDay, ventilationType],
+    selectedDay !== null 
+
   );
 
   useEffect(() => {
