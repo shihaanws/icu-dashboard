@@ -21,66 +21,24 @@ const PageLayout = ({
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  // Get the current route
   const location = useLocation();
-
-  // Define the header menu items
-  const items1 = [
-    { key: "1", label: <Link to="/">Home</Link> },
-    {
-      key: "2",
-      label: (
-        <Link to={`/patient/${patientId}/neurology`}>
-          Neurology
-        </Link>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <Link to={`/patient/${patientId}/labs`}>
-          Labs
-        </Link>
-      ),
-    },
-    {
-      key: "4",
-      label: (
-        <Link to={`/patient/${patientId}/ventilation`}>
-          Ventilation
-        </Link>
-      ),
-    },
-  ];
 
   // Define the sidebar menu items
   const items2 = [
     {
       key: "2",
       icon: <DeploymentUnitOutlined />,
-      label: (
-        <Link to={`/patient/${patientId}/neurology`}>
-          Neurology
-        </Link>
-      ),
+      label: <Link to={`/patient/${patientId}/neurology`}>Neurology</Link>,
     },
     {
       key: "3",
       icon: <ExperimentOutlined />,
-      label: (
-        <Link to={`/patient/${patientId}/labs`}>
-          Labs
-        </Link>
-      ),
+      label: <Link to={`/patient/${patientId}/labs`}>Labs</Link>,
     },
     {
       key: "4",
       icon: <RobotOutlined />,
-      label: (
-        <Link to={`/patient/${patientId}/ventilation`}>
-          Ventilation
-        </Link>
-      ),
+      label: <Link to={`/patient/${patientId}/ventilation`}>Ventilation</Link>,
     },
   ];
 
@@ -99,7 +57,7 @@ const PageLayout = ({
         <Menu
           theme="dark"
           mode="horizontal"
-          selectedKeys={[getSelectedKey()]} // Dynamically set selected item
+          selectedKeys={[getSelectedKey()]}
           //   items={items1}
           style={{ flex: 1, minWidth: 0 }}
         />
@@ -133,7 +91,7 @@ const PageLayout = ({
           >
             <Menu
               mode="inline"
-              selectedKeys={[getSelectedKey()]} // Dynamically set selected item
+              selectedKeys={[getSelectedKey()]}
               style={{ height: "100%" }}
               items={items2}
             />

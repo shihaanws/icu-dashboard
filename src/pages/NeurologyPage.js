@@ -1,127 +1,97 @@
-import React, { useState, useEffect } from "react";
-import { useQuery } from "react-query";
+import {
+  CompassOutlined,
+  DashboardOutlined,
+  EyeOutlined,
+  ThunderboltOutlined,
+} from "@ant-design/icons";
+import { Col, Row, Segmented, Select, Table, Typography } from "antd";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-import { Segmented, Select, Skeleton, Table, Row, Col, Tag } from "antd";
-import PageLayout from "../components/PageLayout";
 import { fetchDateRange, fetchNeurologyData } from "../api/patientData";
-import { Typography } from "antd";
+import PageLayout from "../components/PageLayout";
+import SegmentOption from "../components/SegmentOption";
+
+import DateTag from "../components/DateTag";
+import LoadingSkeleton from "../components/LoadingSkeleton";
+import { useDataFetch } from "../hooks/useDataFetch";
+import { useDateOptions } from "../hooks/useDateOptions";
+import { formatDateTime } from "../utils/dateUtils";
+
 const { Title, Text } = Typography;
+
 const NeurologyPage = () => {
   const { patientId } = useParams();
 
-  const {
-    data: rangeData,
-    isLoading: isLoadingRange,
-    error: errorRange,
-  } = useQuery(["neuroRange", patientId], () =>
-    fetchDateRange(patientId, "neurology")
+  const { data: rangeData, isLoading: isLoadingRange } = useDataFetch(
+    "neuroRange",
+    fetchDateRange,
+    [patientId, "neurology"]
   );
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [neuroType, setNeuroType] = useState("GCS");
+  const [loader, setLoader] = useState(true);
+
+  const { data: neuroData, isLoading } = useDataFetch(
+    "neuroData",
+    fetchNeurologyData,
+    [patientId, selectedDay, neuroType]
+  );
 
   useEffect(() => {
     if (rangeData?.data) {
-      setEndDate(rangeData.data.end_time?.slice(0, 10));
       setStartDate(rangeData.data.start_time?.slice(0, 10));
+      setEndDate(rangeData.data.end_time?.slice(0, 10));
       setSelectedDay(rangeData.data.end_time?.slice(0, 10));
     }
   }, [rangeData]);
 
-  const [selectedDay, setSelectedDay] = useState(startDate);
-  const [options, setOptions] = useState([]);
+  const options = useDateOptions(startDate, endDate);
 
   useEffect(() => {
-    console.log("rangeData", rangeData, startDate, endDate);
-    function getDatesBetween(startDate, endDate) {
-      let dates = [];
-      let currentDate = new Date(startDate);
-      let dayIndex = 1;
-
-      while (currentDate <= new Date(endDate)) {
-        let formattedDate = currentDate.toISOString().split("T")[0]; // Format date as 'YYYY-MM-DD'
-        dates.push({
-          value: formattedDate,
-          label: `Day ${dayIndex++}`, // Increment day index for each date
-        });
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
-      return dates;
+    if (neuroData) {
+      setLoader(false);
     }
-
-    const formattedDates = getDatesBetween(startDate, endDate);
-
-    console.log(formattedDates);
-    console.log("formattedDates", formattedDates);
-    setOptions(formattedDates);
-  }, [startDate, endDate]);
-
-  const { data, isLoading, error } = useQuery(
-    ["neuroData", patientId, selectedDay],
-    () => fetchNeurologyData(patientId, selectedDay),
-    { keepPreviousData: true, enabled: !!selectedDay }
-  );
-
-  if (isLoadingRange) return <Skeleton active />;
-  if (errorRange) return <div>Error loading date range.</div>;
-
-  if (isLoading) return <Skeleton active />;
-  if (error) return <div>Error loading neurology data.</div>;
+  }, [neuroData]);
 
   const columns = [
     {
-      title: "Subject ID",
+      title: "Patient ID",
       dataIndex: "subject_id",
       key: "subject_id",
+      render: (text) => text || "N/A",
     },
     {
-      title: "Stay ID",
+      title: "Admission ID",
       dataIndex: "stay_id",
       key: "stay_id",
+      render: (text) => text || "N/A",
     },
     {
-      title: "Chart Time",
+      title: "Assessment Time",
       dataIndex: "charttime",
       key: "charttime",
-      render: (text) => new Date(text).toLocaleString(),
+      render: (text) => formatDateTime(text),
     },
     {
-      title: "Label",
+      title: "Observation Type",
       dataIndex: "label",
       key: "label",
+      render: (text) => text || "N/A",
     },
     {
-      title: "Value",
+      title: "Observation Result",
       dataIndex: "value",
       key: "value",
-    },
-    {
-      title: "Value Num",
-      dataIndex: "valuenum",
-      key: "valuenum",
+      render: (text, record) =>
+        record.valueuom ? `${record.value} ${record.valueuom}` : text || "N/A",
     },
   ];
 
-  // Create a new Date object with the given date string
-  const date = new Date(selectedDay);
-
-  // Options for formatting the date
-  const dateOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-
-  // Format the date to a readable string
-  const readableDate = date.toLocaleDateString("en-US", dateOptions);
-
-  console.log(readableDate); // Outputs: November 17, 2171
-
-  const handleChange = (value) => {
+  const handleDayChange = (value) => {
     setSelectedDay(value);
-    console.log("valuef", value);
   };
 
   return (
@@ -131,43 +101,85 @@ const NeurologyPage = () => {
       endDate={endDate}
       breadcrumbItems={["Neurology"]}
     >
-      <>
-        <Row
-          className="flex justify-between"
-          gutter={[16, 16]}
-          style={{ marginBottom: "20px" }}
-        >
-          <Col>
-            <Select
-              value={selectedDay}
-              style={{ width: 200 }}
-              onChange={handleChange}
-              options={options}
-            />
-          </Col>
+      {isLoading || loader ? (
+        <LoadingSkeleton />
+      ) : (
+        <>
+          <Row className="flex justify-between" gutter={[16, 16]}>
+            <Col>
+              <Select
+                value={selectedDay}
+                style={{ width: 200 }}
+                onChange={handleDayChange}
+                options={options}
+              />
+            </Col>
+          </Row>
 
-          <Col>
-            <Segmented
-              options={["GCS", "Pupil", "Strength", "Orientation"]}
-              onChange={(value) => {
-                console.log(value);
-              }}
-            />
-          </Col>
-        </Row>
-       
+          <Row className="flex justify-between mb-2 items-end">
+            <DateTag date={selectedDay} />
 
-        <Tag className="mt-2 mb-3 text-lg	" color="orange">
-          {readableDate}
-        </Tag>
+            <Col>
+              <Segmented
+                options={[
+                  {
+                    label: (
+                      <SegmentOption
+                        icon={<DashboardOutlined />}
+                        color="blue"
+                        label="GCS"
+                        value="GCS"
+                      />
+                    ),
+                    value: "GCS",
+                  },
+                  {
+                    label: (
+                      <SegmentOption
+                        icon={<EyeOutlined />}
+                        color="green"
+                        label="Pupil"
+                        value="Pupil"
+                      />
+                    ),
+                    value: "Pupil",
+                  },
+                  {
+                    label: (
+                      <SegmentOption
+                        icon={<ThunderboltOutlined />}
+                        color="yellow"
+                        label="Strength"
+                        value="Strength"
+                      />
+                    ),
+                    value: "Strength",
+                  },
+                  {
+                    label: (
+                      <SegmentOption
+                        icon={<CompassOutlined />}
+                        color="red"
+                        label="Orientation"
+                        value="Orientation"
+                      />
+                    ),
+                    value: "Orientation",
+                  },
+                ]}
+                onChange={setNeuroType}
+              />
+            </Col>
+          </Row>
 
-        <Table
-          columns={columns}
-          dataSource={data?.data}
-          rowKey="subject_id"
-          pagination={{ pageSize: 10 }}
-        />
-      </>
+          <Table
+            columns={columns}
+            dataSource={neuroData?.data}
+            rowKey="subject_id"
+            pagination={{ pageSize: 10 }}
+          />
+        </>
+      )}
     </PageLayout>
   );
 };

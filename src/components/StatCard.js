@@ -12,14 +12,13 @@ function CardComp({ statValues }) {
     errorStats,
   } = useQuery(["patientStats"], () => fetchPatientStats());
 
-  console.log("patientStatsData", patientStatsData);
   return (
     <Card
       className="bg-slate-100"
       hoverable
       style={{
         marginBottom: "10px",
-        minWidth: 400,
+        minWidth: 450,
       }}
     >
       <Meta
