@@ -1,38 +1,38 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+import { Col, Row, Select, Segmented, Table, Typography } from "antd";
 import {
   CompassOutlined,
   DashboardOutlined,
   EyeOutlined,
   ThunderboltOutlined,
 } from "@ant-design/icons";
-import { Col, Row, Segmented, Select, Table, Typography } from "antd";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { fetchDateRange, fetchNeurologyData } from "../api/patientData";
-import PageLayout from "../components/PageLayout";
-import SegmentOption from "../components/SegmentOption";
 
-import DateTag from "../components/DateTag";
-import LoadingSkeleton from "../components/LoadingSkeleton";
 import { useDataFetch } from "../hooks/useDataFetch";
 import { useDateOptions } from "../hooks/useDateOptions";
+import { fetchDateRange, fetchNeurologyData } from "../api/patientData";
 import { formatDateTime } from "../utils/dateUtils";
 
-const { Title, Text } = Typography;
+import PageLayout from "../components/PageLayout";
+import SegmentOption from "../components/SegmentOption";
+import DateTag from "../components/DateTag";
+import LoadingSkeleton from "../components/LoadingSkeleton";
 
 const NeurologyPage = () => {
   const { patientId } = useParams();
-
-  const { data: rangeData, isLoading: isLoadingRange } = useDataFetch(
-    "neuroRange",
-    fetchDateRange,
-    [patientId, "neurology"]
-  );
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [neuroType, setNeuroType] = useState("GCS");
   const [loader, setLoader] = useState(true);
+
+  const { data: rangeData, isLoading: isLoadingRange } = useDataFetch(
+    "neuroRange",
+    fetchDateRange,
+    [patientId, "neurology"]
+  );
 
   const { data: neuroData, isLoading } = useDataFetch(
     "neuroData",
@@ -48,13 +48,17 @@ const NeurologyPage = () => {
     }
   }, [rangeData]);
 
-  const options = useDateOptions(startDate, endDate);
-
   useEffect(() => {
     if (neuroData) {
       setLoader(false);
     }
   }, [neuroData]);
+
+  const options = useDateOptions(startDate, endDate);
+
+  const handleDayChange = (value) => {
+    setSelectedDay(value);
+  };
 
   const columns = [
     {
@@ -89,10 +93,6 @@ const NeurologyPage = () => {
         record.valueuom ? `${record.value} ${record.valueuom}` : text || "N/A",
     },
   ];
-
-  const handleDayChange = (value) => {
-    setSelectedDay(value);
-  };
 
   return (
     <PageLayout

@@ -1,5 +1,4 @@
 import { Skeleton } from "antd";
-import { DotChartOutlined } from "@ant-design/icons";
 
 const LoadingSkeleton = () => (
   <>

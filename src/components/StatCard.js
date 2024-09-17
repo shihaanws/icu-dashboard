@@ -1,4 +1,4 @@
-import { Card, Image, Typography, Avatar } from "antd";
+import { Avatar, Card, Typography } from "antd";
 import React from "react";
 import { useQuery } from "react-query";
 import { fetchPatientStats } from "../api/patientData";

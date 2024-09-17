@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 
 export function getDatesBetween(startDate, endDate) {
   let dates = [];

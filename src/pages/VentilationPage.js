@@ -1,19 +1,27 @@
-import { Col, Row, Segmented, Select, Skeleton, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
+import { Col, Row, Select, Segmented, Table } from "antd";
+import { MonitorOutlined, SettingOutlined } from "@ant-design/icons";
+
+import { useDataFetch } from "../hooks/useDataFetch";
+import { useDateOptions } from "../hooks/useDateOptions";
 import { fetchDateRange, fetchVentilationData } from "../api/patientData";
-import DateTag from "../components/DateTag";
+import { formatDateTime } from "../utils/dateUtils";
+
 import PageLayout from "../components/PageLayout";
 import SegmentOption from "../components/SegmentOption";
-import { formatDateTime, getDatesBetween } from "../utils/dateUtils";
-import { useQuery } from "react-query";
-import { SettingOutlined, MonitorOutlined } from "@ant-design/icons";
+import DateTag from "../components/DateTag";
 import LoadingSkeleton from "../components/LoadingSkeleton";
-import { useDateOptions } from "../hooks/useDateOptions";
-import { useDataFetch } from "../hooks/useDataFetch";
 
 const VentilationPage = () => {
   const { patientId } = useParams();
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [ventilationType, setVentilationType] = useState("setting");
+  const [loader, setLoader] = useState(true);
 
   const { data: rangeData, isLoading: isLoadingRange } = useDataFetch(
     "rangeData",
@@ -21,19 +29,31 @@ const VentilationPage = () => {
     [patientId, "ventilation"]
   );
 
-  // const {
-  //   data: rangeData,
-  //   isLoading: isLoadingRange,
-  //   error: errorRange,
-  // } = useQuery(["ventRange", patientId], () =>
-  //   fetchDateRange(patientId, "ventilation")
-  // );
+  const { data: ventData, isLoading } = useDataFetch(
+    "ventData",
+    fetchVentilationData,
+    [patientId, selectedDay, ventilationType]
+  );
 
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [ventilationType, setVentilationType] = useState("setting");
-  const [loader, setLoader] = useState(true);
+  useEffect(() => {
+    if (rangeData?.data) {
+      const fetchedStartDate = rangeData.data.start_time?.slice(0, 10);
+      const fetchedEndDate = rangeData.data.end_time?.slice(0, 10);
+      setStartDate(fetchedStartDate);
+      setEndDate(fetchedEndDate);
+      setSelectedDay(fetchedEndDate);
+    }
+  }, [rangeData]);
+
+  useEffect(() => {
+    if (ventData) setLoader(false);
+  }, [ventData]);
+
+  const options = useDateOptions(startDate, endDate);
+
+  const handleDayChange = (value) => {
+    setSelectedDay(value);
+  };
 
   const columns = [
     { title: "Patient ID", dataIndex: "subject_id", key: "subject_id" },
@@ -47,33 +67,6 @@ const VentilationPage = () => {
     { title: "Observation Type", dataIndex: "label", key: "label" },
     { title: "Observation Result", dataIndex: "value", key: "value" },
   ];
-
-  // Update state when date range data is fetched
-  useEffect(() => {
-    if (rangeData?.data) {
-      const fetchedStartDate = rangeData.data.start_time?.slice(0, 10);
-      const fetchedEndDate = rangeData.data.end_time?.slice(0, 10);
-      setStartDate(fetchedStartDate);
-      setEndDate(fetchedEndDate);
-      setSelectedDay(fetchedEndDate);
-    }
-  }, [rangeData]);
-
-  const options = useDateOptions(startDate, endDate);
-
-  const { data: ventData, isLoading } = useDataFetch(
-    "ventData",
-    fetchVentilationData,
-    [patientId, selectedDay, ventilationType]
-  );
-
-  useEffect(() => {
-    if (ventData) setLoader(false);
-  }, [ventData]);
-
-  const handleDayChange = (value) => {
-    setSelectedDay(value);
-  };
 
   return (
     <PageLayout
@@ -129,6 +122,7 @@ const VentilationPage = () => {
               />
             </Col>
           </Row>
+
           <Table
             columns={columns}
             dataSource={ventData?.data}
