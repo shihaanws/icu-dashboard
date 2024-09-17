@@ -99,6 +99,7 @@ const LabsPage = () => {
           </Row>
 
           <Table
+            scroll={{ x: 1000 }}
             columns={columns}
             dataSource={labsData?.data}
             rowKey="subject_id"

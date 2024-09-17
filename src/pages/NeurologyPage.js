@@ -38,9 +38,8 @@ const NeurologyPage = () => {
     "neuroData",
     fetchNeurologyData,
     [patientId, selectedDay, neuroType],
-    selectedDay !== null 
+    selectedDay !== null
   );
-  
 
   useEffect(() => {
     if (rangeData?.data) {
@@ -175,6 +174,7 @@ const NeurologyPage = () => {
           </Row>
 
           <Table
+            scroll={{ x: 1000 }}
             columns={columns}
             dataSource={neuroData?.data}
             rowKey="subject_id"

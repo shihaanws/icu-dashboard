@@ -13,14 +13,7 @@ function CardComp({ statValues }) {
   } = useQuery(["patientStats"], () => fetchPatientStats());
 
   return (
-    <Card
-      className="bg-slate-100"
-      hoverable
-      style={{
-        marginBottom: "10px",
-        minWidth: 450,
-      }}
-    >
+    <Card className="bg-slate-100 mb-[10px]" hoverable>
       <Meta
         avatar={
           <Avatar

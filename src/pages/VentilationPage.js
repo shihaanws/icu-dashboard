@@ -33,8 +33,7 @@ const VentilationPage = () => {
     "ventData",
     fetchVentilationData,
     [patientId, selectedDay, ventilationType],
-    selectedDay !== null 
-
+    selectedDay !== null
   );
 
   useEffect(() => {
@@ -126,6 +125,7 @@ const VentilationPage = () => {
           </Row>
 
           <Table
+            scroll={{ x: 1000 }}
             columns={columns}
             dataSource={ventData?.data}
             rowKey="subject_id"

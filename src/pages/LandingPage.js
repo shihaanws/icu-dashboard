@@ -84,23 +84,28 @@ const LandingPage = () => {
           <LoadingSkeleton />
         ) : (
           <>
-            <div className="flex gap-5 w-full">
-              <StatCard
-                statValues={[
-                  "Total Number of Stays",
-                  totalPatients,
-                  "stays.svg",
-                ]}
-              />
-              <StatCard
-                statValues={[
-                  "Average Length of Stay",
-                  avgStayLength,
-                  "avg.svg",
-                ]}
-              />
+            <div className="flex flex-col md:flex-row gap-5 w-full">
+              <div className="flex-1 min-w-[200px]">
+                <StatCard
+                  statValues={[
+                    "Total Number of Stays",
+                    totalPatients,
+                    "stays.svg",
+                  ]}
+                />
+              </div>
+              <div className="flex-1 min-w-[200px]">
+                <StatCard
+                  statValues={[
+                    "Average Length of Stay",
+                    avgStayLength,
+                    "avg.svg",
+                  ]}
+                />
+              </div>
             </div>
             <Table
+              scroll={{ x: 1000 }} 
               columns={columns}
               dataSource={patients}
               rowKey="subject_id"
@@ -110,6 +115,7 @@ const LandingPage = () => {
                 total: totalPatients,
                 onChange: (page) => setCurrentPage(page),
               }}
+              className="mt-5" 
             />
           </>
         )}
